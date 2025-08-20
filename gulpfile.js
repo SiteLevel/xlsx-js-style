@@ -23,6 +23,15 @@ gulp.task("min", () => {
 		.pipe(gulp.dest("./dist/"));
 });
 
+gulp.task("unmin", () => {
+	return gulp
+		.src(["./src/xlsx.js"])
+		.pipe(concat("xlsx.js"))
+		.pipe(replace("./dist/cpexcel.js", "./cpexcel.js"))
+		.pipe(insert.prepend("/* xlsx-js-style " + pkg.version + " @ " + new Date().toISOString() + " */\n"))
+		.pipe(gulp.dest("./dist/"));
+});
+
 gulp.task("bundle", () => {
 	return gulp
 		.src(["./libs/*", "./src/xlsx.js"])
@@ -41,6 +50,6 @@ gulp.task("nodeTest", () => {
 });
 
 // Build/Deploy (ad-hoc, no watch)
-gulp.task("ship", gulp.series("min", "bundle", "nodeTest"), () => {
+gulp.task("ship", gulp.series("min", "unmin", "bundle", "nodeTest"), () => {
 	console.log("... ./dist/*.js files created!");
 });
